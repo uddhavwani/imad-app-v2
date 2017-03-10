@@ -1,7 +1,51 @@
-<<?php 
-	ob_start();
-?>
+<?php 
+	require_once 'config/dbconnect.php';
+	if(isset($_POST['login']))
+	{
+		$username=$_POST['username'];
+		$password=$_POST['password'];
+		$selall = "SELECT `password` FROM user WHERE `username` = '$username'";
+		$runsel = mysqli_query($conn, $selall);
+		while($rowsel=mysqli_fetch_assoc($runsel)) 
+		{
+			$pass = $rowsel['password'];
+			
+		}
 
+		if(password_verify($password,$pass))
+		{
+
+			?>
+				<script type="text/javascript">
+					alert('Password Matched');
+				</script>
+			<?php
+			if(isset($_POST['remember'])){
+				setcookie('username', $username ,time()+ (86400*30));
+				setcookie('password', $password ,time()+ (86400*30));
+			}s
+			
+			header("Location:home/index.php");
+		}
+		else{
+			?>
+			<script>alert("Enter a Valid Username or Password")</script><?php
+		}
+
+	}else{
+		?>
+				<!--<script>alert("Enter IN else")</script>--><?php	
+	}
+	if(isset($_COOKIE['username']) and isset($_COOKIE['password'])){
+		echo "<script> 
+		document.getElementById('username').value= '$username';
+		document.getElementById('password').value= '$password';
+		</script>";
+
+	}
+
+	ob_end_flush();
+ ?>
 <html lang="en">
 <head>
 	<title>ORS by Uddhav</title>
@@ -45,7 +89,7 @@
 	                        <div class="card">
 	                            <div class="card-header" style="background: linear-gradient(60deg, #ec407a, #d81b60);" >
 	                                <center><h4 class="title"><b>Login</b></h4>
-									<p class="category" style="color: white;"><i>Login to your ORRS Account</i></p></center>
+						<p class="category" style="color: white;"><i>Login to your ORRS Account</i></p></center>
 	                            </div>
 	                            <div class="card-content">
 	                                <form method="POST" action="">
@@ -57,7 +101,7 @@
 	                                    </div>
 	                                    <div class="row">
 	                                        <div class="col-md-12">
-												<div class="form-group label-floating">
+								<div class="form-group label-floating">
 													<label class="control-label">User Name</label>
 													<input type="text" name="username" class="form-control" id="username"required />
 													<span class="help-block">We'll never share your personal information with anyone else.</span>
@@ -115,51 +159,4 @@
     	});
 	</script>
 </html>
-<?php 
-	require_once 'config/dbconnect.php';
-	if(isset($_POST['login']))
-	{
-		$username=$_POST['username'];
-		$password=$_POST['password'];
-		$selall = "SELECT `password` FROM user WHERE `username` = '$username'";
-		$runsel = mysqli_query($conn, $selall);
-		while($rowsel=mysqli_fetch_assoc($runsel)) 
-		{
-			$pass = $rowsel['password'];
-			
-		}
 
-		if(password_verify($password,$pass))
-		{
-
-			?>
-				<script type="text/javascript">
-					alert('Password Matched');
-				</script>
-			<?php
-			if(isset($_POST['remember'])){
-				setcookie('username', $username ,time()+ (86400*30));
-				setcookie('password', $password ,time()+ (86400*30));
-			}s
-			
-			header("Location:home/index.php");
-		}
-		else{
-			?>
-			<script>alert("Enter a Valid Username or Password")</script><?php
-		}
-
-	}else{
-		?>
-				<!--<script>alert("Enter IN else")</script>--><?php	
-	}
-	if(isset($_COOKIE['username']) and isset($_COOKIE['password'])){
-		echo "<script> 
-		document.getElementById('username').value= '$username';
-		document.getElementById('password').value= '$password';
-		</script>";
-
-	}
-
-	ob_end_flush();
- ?>
