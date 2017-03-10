@@ -1,3 +1,7 @@
+<<?php 
+	ob_start();
+?>
+
 <html lang="en">
 <head>
 	<title>ORS by Uddhav</title>
@@ -54,8 +58,8 @@
 	                                    <div class="row">
 	                                        <div class="col-md-12">
 												<div class="form-group label-floating">
-													<label class="control-label" for="foremail" >User Name</label>
-													<input type="text" name="username" class="form-control" id="foremail"required />
+													<label class="control-label">User Name</label>
+													<input type="text" name="username" class="form-control" id="username"required />
 													<span class="help-block">We'll never share your personal information with anyone else.</span>
 
 												</div>
@@ -65,10 +69,19 @@
 	                                        <div class="col-md-12">
 												<div class="form-group label-floating">
 													<label class="control-label">Password</label>
-													<input type="password" name="password" class="form-control" required>
+													<input type="password" name="password" class="form-control" id="password" required>
 												</div>
 	                                        </div>
 	                                    </div>
+	                                    <div class="row">
+	                                        <div class="col-md-12">
+												<div class="form-group">
+												  <div class="checkbox">
+												    <label><input type="checkbox" name="remember" />Remember</label>
+												  </div>
+												  <p class="help-block"></p>
+												</div>
+	                                   <br>
 	                                   	<a href="">Forgot Password</a></br>
 	                                    <input type="submit" name="login" value="Login" class="btn btn-primary pull-right" style="background: linear-gradient(60deg, #ec407a, #d81b60);" />
 	                                    <a href="sign-up" class="button" class="btn btn-primary pull-left" style="background: linear-gradient(60deg, #ec407a, #d81b60);"">Sign-Up</a>
@@ -103,23 +116,50 @@
 	</script>
 </html>
 <?php 
-	require_once '../config/dbconnect.php';
+	require_once 'config/dbconnect.php';
 	if(isset($_POST['login']))
 	{
 		$username=$_POST['username'];
 		$password=$_POST['password'];
-		$selall = "SELECT 'username' , 'password' FROM user";
+		$selall = "SELECT `password` FROM user WHERE `username` = '$username'";
 		$runsel = mysqli_query($conn, $selall);
-		while ($rowsel = mysqli_fetch_assoc($runsel)) 
+		while($rowsel=mysqli_fetch_assoc($runsel)) 
 		{
-			if($username==$rowsel['username'] && password_verify('$password',$rowsel['password']))
-			{
-				header("Location:home/index.php");
-			}
-			else{
-				echo "Enter a Valid Username or Password";
-			}
+			$pass = $rowsel['password'];
+			
 		}
+
+		if(password_verify($password,$pass))
+		{
+
+			?>
+				<script type="text/javascript">
+					alert('Password Matched');
+				</script>
+			<?php
+			if(isset($_POST['remember'])){
+				setcookie('username', $username ,time()+ (86400*30));
+				setcookie('password', $password ,time()+ (86400*30));
+			}s
+			
+			header("Location:home/index.php");
+		}
+		else{
+			?>
+			<script>alert("Enter a Valid Username or Password")</script><?php
+		}
+
+	}else{
+		?>
+				<!--<script>alert("Enter IN else")</script>--><?php	
+	}
+	if(isset($_COOKIE['username']) and isset($_COOKIE['password'])){
+		echo "<script> 
+		document.getElementById('username').value= '$username';
+		document.getElementById('password').value= '$password';
+		</script>";
+
 	}
 
+	ob_end_flush();
  ?>
